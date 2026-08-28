@@ -1,6 +1,33 @@
 # Changelog
 
-## v1.2.4 — 2026-08-01
+## v2.0.0 — 2026-08-28
+### OPEN-GYM_TRAINER: AI-Powered Fitness Trainer with Pose Estimation
+
+Major update introducing AI-powered pose estimation and real-time form analysis capabilities.
+
+#### 🚀 New Features
+- **AI Pose Estimation**: Integrated MediaPipe pose estimation for real-time movement tracking
+- **Dual Camera Support**: Front and side camera views for comprehensive form analysis
+- **Real-Time Form Feedback**: Live scoring (0-100) with visual issue detection
+- **Exercise-Specific Analysis**: Specialized algorithms for squat and deadlift form correction
+- **Privacy-First Processing**: All pose estimation runs client-side, no video leaves device
+
+#### 🏋️‍♂️ Form Analysis Capabilities
+- **Squat Analysis**: Knee valgus detection, depth measurement, forward lean detection
+- **Deadlift Analysis**: Rounded back detection, hip position validation
+- **Visual Feedback**: Color-coded issue indicators and form score display
+
+#### 💻 Technical Implementation
+- Added `@mediapipe/pose` dependency
+- Created `frontend/src/lib/poseEstimation.js` with PoseEstimator and FormAnalyzer classes
+- Updated `frontend/src/views/Workout.jsx` for pose estimation UI and controls
+- Maintained all existing openGym workout tracking features
+
+#### 🔒 Privacy & Security
+- Zero data transmission: All processing happens in-browser
+- No video storage or sharing
+- Only abstract metrics (angles, visibility) used for analysis
+- Maintains original openGym security model with passkeys and data isolation
 
 The effort ratings you have been recording since v1.2.3 now answer questions, and bodyweight
 training stops being treated as barbell training with the weight left at zero. Plus: creating a

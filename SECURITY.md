@@ -1,6 +1,6 @@
-# Security policy
+# Security Policy
 
-openGym is a self-hosted app: you run the server, you hold the data. This file says which
+OPEN-GYM_TRAINER is a self-hosted app: you run the server, you hold the data. This file says which
 versions get fixes, how to report something privately, and — the part most people actually
 need — what the app protects you from and what it doesn't.
 
@@ -20,7 +20,7 @@ git pull && docker compose pull && docker compose up -d
 
 Use GitHub's private vulnerability reporting — repo **Security** tab → **Report a vulnerability**:
 
-<https://github.com/DuarteSantos8/openGym/security/advisories/new>
+<https://github.com/skavish601-cloud/OPEN-GYM_TRAINER/security/advisories/new>
 
 > Private reporting has to be switched on in the repository settings for that link to work
 > (Settings → Advanced Security → Private vulnerability reporting). If it 404s, open a normal

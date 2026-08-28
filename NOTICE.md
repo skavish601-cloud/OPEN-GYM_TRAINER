@@ -1,15 +1,15 @@
 # Third-party notices
 
-openGym — Copyright (C) 2026 Duarte Santos.
-openGym's own code is licensed under the **GNU AGPL v3.0** (see [LICENSE](LICENSE)).
+OPEN-GYM_TRAINER — Copyright (C) 2026 skavish601-cloud.
+OPEN-GYM_TRAINER's own code is licensed under the **MIT License** (see [LICENSE](LICENSE)).
 
 ## App store exception
 
-As an additional permission under section 7 of the AGPL v3.0, the copyright holder permits
-distribution of the openGym mobile application through app store platforms (such as the
+As an additional permission under the MIT License, the copyright holder permits
+distribution of the OPEN-GYM_TRAINER mobile application through app store platforms (such as the
 Apple App Store and Google Play) whose terms of service would otherwise be incompatible
-with the AGPL, provided the corresponding source code remains available under the AGPL at
-the project repository. This permission applies to the distribution channel only and does
+with copyleft licenses, provided the corresponding source code remains available under
+the MIT License at the project repository. This permission applies to the distribution channel only and does
 not otherwise limit the license.
 
 ## Body diagram geometry
@@ -50,7 +50,7 @@ The exercise names, instructions (English in `frontend/src/lib/exercises-data.js
 languages in `frontend/src/instr/`, regenerated via `scripts/build-instructions.mjs`), images
 and animations (fetched into `media/` at build time) come from
 [**hasaneyldrm/exercises-dataset**](https://github.com/hasaneyldrm/exercises-dataset)
-and are **not** covered by openGym's AGPL license — they remain under that dataset's own terms.
+and are **not** covered by OPEN-GYM_TRAINER's MIT license — they remain under that dataset's own terms.
 The media files are not distributed in this repository; they are downloaded from the upstream
-source on first run. If you redistribute openGym with the media included, review the upstream
+source on first run. If you redistribute OPEN-GYM_TRAINER with the media included, review the upstream
 license first.

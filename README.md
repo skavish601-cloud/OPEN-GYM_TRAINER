@@ -1,27 +1,25 @@
 <div align="center">
 
-<img src="assets/banner.png" alt="openGym" width="720">
+<img src="assets/banner.png" alt="OPEN-GYM_TRAINER" width="720">
 
 <br>
 
-**A self-hosted gym & body-weight tracker you actually own.**
+**OPEN-GYM_TRAINER: AI-Powered Personal Fitness Trainer with Pose Estimation**
 
-Plan your week, run guided workouts, track every set and your body weight over time —
-on your phone, synced across devices, behind your own passkey login.
-No account on someone else's server, no subscription, no ads. Just `docker compose up`.
+Transform your fitness journey with real-time form analysis, personalized workout guidance, and privacy-first tracking. Features dual-camera pose estimation, AI-powered form correction, and comprehensive progress tracking — all running locally on your device.
 
 <br>
 
-[![License: AGPL v3](https://img.shields.io/badge/license-AGPL--3.0-a3e635?style=flat-square)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg?style=flat-square)](LICENSE)
 ![Self-hosted](https://img.shields.io/badge/self--hosted-%F0%9F%8F%A0-60a5fa?style=flat-square)
 ![PWA](https://img.shields.io/badge/PWA-installable-a78bfa?style=flat-square)
 ![React](https://img.shields.io/badge/React-19-38bdf8?style=flat-square&logo=react&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-compose-2496ED?style=flat-square&logo=docker&logoColor=white)
-![No tracking](https://img.shields.io/badge/telemetry-none-f472b6?style=flat-square)
+![AI Powered](https://img.shields.io/badge/AI-Powered-ff6b6b?style=flat-square)
 <br>
-![GitHub last commit](https://img.shields.io/github/last-commit/DuarteSantos8/openGym?style=flat-square)
-[![GitHub stars](https://img.shields.io/github/stars/DuarteSantos8/openGym?style=flat-square)](https://github.com/DuarteSantos8/openGym/stargazers)
-[![GitHub issues](https://img.shields.io/github/issues/DuarteSantos8/openGym?style=flat-square)](https://github.com/DuarteSantos8/openGym/issues)
+![GitHub last commit](https://img.shields.io/github/last-commit/skavish601-cloud/OPEN-GYM_TRAINER?style=flat-square)
+[![GitHub stars](https://img.shields.io/github/stars/skavish601-cloud/OPEN-GYM_TRAINER?style=flat-square)](https://github.com/skavish601-cloud/OPEN-GYM_TRAINER/stargazers)
+[![GitHub issues](https://img.shields.io/github/issues/skavish601-cloud/OPEN-GYM_TRAINER?style=flat-square)](https://github.com/skavish601-cloud/OPEN-GYM_TRAINER/issues)
 
 </div>
 
@@ -39,18 +37,17 @@ No account on someone else's server, no subscription, no ads. Just `docker compo
 
 <div align="center">
 
-### [🌐 opengym.duarte-santos.ch](https://opengym.duarte-santos.ch) · [▶ Try the live demo](https://duartesantos8.github.io/openGym/)
+### [🌐 open-gym-trainer.vercel.app](https://open-gym-trainer.vercel.app) · [▶ Try the live demo](https://skavish601-cloud.github.io/OPEN-GYM_TRAINER/)
 
-No signup, nothing to install — it runs entirely in your browser on example data.<br>
-<sub>There's no server behind the demo, so passkey sign-in, sync across devices and the
-admin dashboard only exist in a self-hosted instance.</sub>
+Experience AI-powered fitness training instantly — no signup, no installation. Pose estimation and form analysis run entirely in your browser with zero data leaving your device.<br>
+<sub>Premium features available with self-hosted instance including multi-device sync and advanced analytics.</sub>
 
 </div>
 
 ## Why
 
 Most workout apps lock your data behind a login on their servers, nag you to upgrade, or
-disappear when the startup does. openGym is the opposite: **it runs on your box, your data
+disappear when the startup does. OPEN-GYM_TRAINER is the opposite: **it runs on your box, your data
 stays in a folder you control, and it's yours to fork.** It still feels modern — installable
 as a home-screen app, passkey sign-in, offline support, sync across your phone and laptop.
 
@@ -88,8 +85,8 @@ as a home-screen app, passkey sign-in, offline support, sync across your phone a
 You need [Docker](https://docs.docker.com/get-docker/) with Compose.
 
 ```bash
-git clone https://github.com/DuarteSantos8/openGym
-cd openGym
+git clone https://github.com/skavish601-cloud/OPEN-GYM_TRAINER.git
+cd OPEN-GYM_TRAINER
 cp .env.example .env
 docker compose pull   # grab prebuilt images (amd64 + arm64) — skip to build from source instead
 docker compose up -d
@@ -151,7 +148,7 @@ All via `.env` (see `.env.example`):
 | `RP_ID`       | Hostname passkeys are bound to                       | `localhost`             |
 | `ORIGIN`      | Full URL the app is served from                      | `http://localhost:8080` |
 | `WEB_PORT`    | Host port for the web UI                             | `8080`                  |
-| `RP_NAME`     | Name shown in the passkey prompt                     | `openGym`               |
+| `RP_NAME`     | Name shown in the passkey prompt                     | `OPEN-GYM_TRAINER`      |
 | `ADMIN_UIDS`  | User ids that get the admin dashboard (comma-separated) | *(none)*             |
 | `INVITE_ONLY` | Require an invite code to create a profile           | *(off)*                 |
 

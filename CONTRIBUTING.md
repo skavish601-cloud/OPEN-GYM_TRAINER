@@ -1,7 +1,6 @@
-# Contributing to openGym
+# Contributing to OPEN-GYM_TRAINER
 
-Thanks for taking a look! openGym is intentionally small and dependency-light, and the goal is
-to keep it that way — easy to read, easy to self-host.
+Thanks for taking a look! OPEN-GYM_TRAINER is an AI-powered fitness trainer application that combines workout tracking with real-time pose estimation and form analysis. Our goal is to create an accessible, privacy-first fitness solution that empowers users to take control of their fitness journey.
 
 ## Project layout
 
