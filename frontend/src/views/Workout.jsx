@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '../store/useStore.js'
 import { useUI } from '../store/useUI.js'
@@ -14,6 +14,7 @@ import Icon from '../components/Icon.jsx'
 import { Button, Check, NumberField } from '../components/ui.jsx'
 import { nextPrescription, applyPrescription } from '../lib/progression.js'
 import { glyphOf } from '../lib/glyphs.js'
+import { PoseEstimator, FormAnalyzer } from '../lib/poseEstimation.js'
 
 /* ---------- start chooser (no active workout) ---------- */
 function StartChooser() {
@@ -164,6 +165,15 @@ function ActiveWorkout() {
   const unitIdx = units.findIndex(u => u === unit)
   const isSuperset = unit.length > 1
 
+  // Pose estimation state
+  const [poseEstimatorFront, setPoseEstimatorFront] = useState(null)
+  const [poseEstimatorSide, setPoseEstimatorSide] = useState(null)
+  const videoRefFront = useRef(null)
+  const videoRefSide = useRef(null)
+  const [isPoseEstimationActive, setIsPoseEstimationActive] = useState(false)
+  const [formFeedback, setFormFeedback] = useState({ issues: [], score: 100 })
+  const [currentExerciseType, setCurrentExerciseType] = useState('squat')
+
   const total = A.entries.reduce((n, e) => n + e.sets.length, 0)
   const done = setsDoneActive(A)
 
@@ -224,6 +234,65 @@ function ActiveWorkout() {
     else if (exJustDone && m === 'time') useUI.getState().toast(t('Hold logged'))
   }
 
+  // Pose estimation initialization and cleanup
+  useEffect(() => {
+    if (!isPoseEstimationActive || !A.entries.length) return
+
+    const exerciseId = A.entries[cur]?.id
+    const exercise = exOr(exerciseId)
+    // Set exercise type based on the exercise name (simplified mapping)
+    const exerciseName = exercise.n.toLowerCase()
+    if (exerciseName.includes('squat')) {
+      setCurrentExerciseType('squat')
+    } else if (exerciseName.includes('deadlift')) {
+      setCurrentExerciseType('deadlift')
+    } else if (exerciseName.includes('bench')) {
+      setCurrentExerciseType('bench press')
+    } else {
+      setCurrentExerciseType('squat') // Default
+    }
+
+    // Initialize pose estimators for front and side cameras if refs exist
+    if (videoRefFront.current && !poseEstimatorFront.current) {
+      const frontEstimator = new PoseEstimator((results) => {
+        if (results.poseLandmarks) {
+          const normalized = FormAnalyzer.normalizeLandmarks(results.poseLandmarks)
+          const formAnalysis = FormAnalyzer.analyzeForm(normalized, currentExerciseType)
+          setFormFeedback(formAnalysis)
+        }
+      })
+      setPoseEstimatorFront(frontEstimator)
+      frontEstimator.initialize(videoRefFront.current)
+    }
+
+    if (videoRefSide.current && !poseEstimatorSide.current) {
+      const sideEstimator = new PoseEstimator((results) => {
+        if (results.poseLandmarks) {
+          const normalized = FormAnalyzer.normalizeLandmarks(results.poseLandmarks)
+          const formAnalysis = FormAnalyzer.analyzeForm(normalized, currentExerciseType)
+          // Combine feedback from both cameras (simplified - in reality you'd want more sophisticated fusion)
+          setFormFeedback(prev => ({
+            ...prev,
+            score: Math.max(prev.score, formAnalysis.score) // Take the better score
+          }))
+        }
+      })
+      setPoseEstimatorSide(sideEstimator)
+      sideEstimator.initialize(videoRefSide.current)
+    }
+
+    return () => {
+      if (poseEstimatorFront.current) {
+        poseEstimatorFront.current.close()
+        setPoseEstimatorFront(null)
+      }
+      if (poseEstimatorSide.current) {
+        poseEstimatorSide.current.close()
+        setPoseEstimatorSide(null)
+      }
+    }
+  }, [isPoseEstimationActive, A.entries.length, cur, currentExerciseType])
+
   // Live-presence heartbeat so the admin dashboard can show who's training now. Signed-in only —
   // guests have no server session. Reads fresh state each tick so progress stays current.
   useEffect(() => {
@@ -256,8 +325,45 @@ function ActiveWorkout() {
       <button className="iconbtn" aria-label={t('Discard')} onClick={() => confirmSheet({ title: t('Discard workout?'), message: t('The sets you logged in this session will be lost.'), confirmText: t('Discard'), danger: true, onConfirm: () => { update(s => { s.active = null }); stopRest(); nav('/home') } })}><Icon name="xmark" /></button>
       <div style={{ textAlign: 'center' }}><div style={{ fontWeight: 600 }}>{A.name}</div><div className="sub"><Elapsed start={A.start} /> · {t('{0} sets', done + '/' + total)}</div></div>
       <button className="iconbtn" style={{ color: 'var(--acc)' }} aria-label={t('Finish')} onClick={finishWorkout}><Icon name="check" /></button>
+      {/* Pose estimation controls */}
+      {!isPoseEstimationActive && (
+        <button className="iconbtn" onClick={() => setIsPoseEstimationActive(true)} aria-label={t('Pose Estimation')}>
+          <Icon name="video" />
+        </button>
+      )}
+      {isPoseEstimationActive && (
+        <button className="iconbtn" onClick={() => setIsPoseEstimationActive(false)} aria-label={t('Stop Pose Estimation')}>
+          <Icon name="videoSlash" />
+        </button>
+      )}
     </div>
     <div className="wprog"><i style={{ width: (total ? done / total * 100 : 0) + '%' }} /></div>
+
+    {/* Form feedback display */}
+    {isPoseEstimationActive && (
+      <div className="card" style={{ marginTop: 10, marginBottom: 10, padding: 10 }}>
+        <div className="row between">
+          <div><h3>{t('Form Feedback')}</h3></div>
+          <div className={`tag ${formFeedback.score >= 80 ? 'acc' : formFeedback.score >= 60 ? 'warn' : 'error'}`}>
+            {formFeedback.score}/100
+          </div>
+        </div>
+        {formFeedback.issues.length > 0 && (
+          <div className="small" style={{ marginTop: 6 }}>
+            {formFeedback.issues.map((issue, index) => (
+              <div key={index} style={{ marginBottom: 4 }}>
+                <Icon name="exclamationTriangle" className="mr-2" /> {issue}
+              </div>
+            ))}
+          </div>
+        )}
+        {formFeedback.issues.length === 0 && (
+          <div className="small muted" style={{ marginTop: 6 }}>
+            {t('Good form!')}
+          </div>
+        )}
+      </div>
+    )}
 
     {A.entries.length ? <>
       <div className="muted small" style={{ marginBottom: 6 }}>{isSuperset ? t('Superset {0} / {1}', unitIdx + 1, units.length) : t('Exercise {0} / {1}', unitIdx + 1, units.length)}</div>
@@ -271,7 +377,20 @@ function ActiveWorkout() {
           </div>)}
         </div>
       ) : (
-        <ExerciseBlock entryIdx={cur} onToggle={i => toggle(cur, i)} onField={(i, f, v) => setField(cur, i, f, v)} onAddSet={() => addSet(cur)} onRemoveSet={() => removeSet(cur)} onStartTimed={i => startTimed(cur, i)} />
+        <>
+          {/* Pose estimation video feeds */}
+          {isPoseEstimationActive && (
+            <div className="row" style={{ marginBottom: 10 }}>
+              <div className="grow">
+                <video ref={videoRefFront} autoPlay playsInline style={{ width: '100%', maxHeight: '200px', backgroundColor: '#000' }} />
+              </div>
+              <div className="grow">
+                <video ref={videoRefSide} autoPlay playsInline style={{ width: '100%', maxHeight: '200px', backgroundColor: '#000' }} />
+              </div>
+            </div>
+          )}
+          <ExerciseBlock entryIdx={cur} onToggle={i => toggle(cur, i)} onField={(i, f, v) => setField(cur, i, f, v)} onAddSet={() => addSet(cur)} onRemoveSet={() => removeSet(cur)} onStartTimed={i => startTimed(cur, i)} />
+        </>
       )}
     </> : <div className="empty"><div className="ico"><Icon name="shuffle" /></div>{t('Freestyle workout — add your first exercise.')}</div>}
 
