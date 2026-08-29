@@ -14,7 +14,7 @@ import Icon from '../components/Icon.jsx'
 import { Button, Check, NumberField } from '../components/ui.jsx'
 import { nextPrescription, applyPrescription } from '../lib/progression.js'
 import { glyphOf } from '../lib/glyphs.js'
-import { PoseEstimator, FormAnalyzer } from '../lib/poseEstimation.js'
+import { PoseEstimator } from '../lib/poseEstimation.js'
 
 /* ---------- start chooser (no active workout) ---------- */
 function StartChooser() {
@@ -238,26 +238,17 @@ function ActiveWorkout() {
   useEffect(() => {
     if (!isPoseEstimationActive || !A.entries.length) return
 
-    const exerciseId = A.entries[cur]?.id
-    const exercise = exOr(exerciseId)
-    // Set exercise type based on the exercise name (simplified mapping)
-    const exerciseName = exercise.n.toLowerCase()
-    if (exerciseName.includes('squat')) {
-      setCurrentExerciseType('squat')
-    } else if (exerciseName.includes('deadlift')) {
-      setCurrentExerciseType('deadlift')
-    } else if (exerciseName.includes('bench')) {
-      setCurrentExerciseType('bench press')
-    } else {
-      setCurrentExerciseType('squat') // Default
-    }
+    const exerciseId = A.entries[cur]?.id;
+    const exercise = exOr(exerciseId);
+    // Set exercise type based on the exercise name (for FormAnalyzer mapping)
+    setCurrentExerciseType(exercise.n.toLowerCase());
 
     // Initialize pose estimators for front and side cameras if refs exist
     if (videoRefFront.current && !poseEstimatorFront.current) {
       const frontEstimator = new PoseEstimator((results) => {
         if (results.poseLandmarks) {
-          const normalized = FormAnalyzer.normalizeLandmarks(results.poseLandmarks)
-          const formAnalysis = FormAnalyzer.analyzeForm(normalized, currentExerciseType)
+          const normalized = PoseEstimator.normalizeLandmarks(results.poseLandmarks)
+          const formAnalysis = PoseEstimator.analyzeForm(normalized, currentExerciseType)
           setFormFeedback(formAnalysis)
         }
       })
@@ -268,8 +259,8 @@ function ActiveWorkout() {
     if (videoRefSide.current && !poseEstimatorSide.current) {
       const sideEstimator = new PoseEstimator((results) => {
         if (results.poseLandmarks) {
-          const normalized = FormAnalyzer.normalizeLandmarks(results.poseLandmarks)
-          const formAnalysis = FormAnalyzer.analyzeForm(normalized, currentExerciseType)
+          const normalized = PoseEstimator.normalizeLandmarks(results.poseLandmarks)
+          const formAnalysis = PoseEstimator.analyzeForm(normalized, currentExerciseType)
           // Combine feedback from both cameras (simplified - in reality you'd want more sophisticated fusion)
           setFormFeedback(prev => ({
             ...prev,
